@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -40,8 +41,6 @@ function InstructorDashboard({ listOfCourses }) {
       studentList,
     };
   }
-
-  console.log(calculateTotalStudentsAndProfit());
 
   const config = [
     {
@@ -107,5 +106,21 @@ function InstructorDashboard({ listOfCourses }) {
     </div>
   );
 }
+
+// Add PropTypes validation
+InstructorDashboard.propTypes = {
+  listOfCourses: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      pricing: PropTypes.number.isRequired,
+      students: PropTypes.arrayOf(
+        PropTypes.shape({
+          studentName: PropTypes.string.isRequired,
+          studentEmail: PropTypes.string.isRequired,
+        })
+      ).isRequired,
+    })
+  ).isRequired,
+};
 
 export default InstructorDashboard;

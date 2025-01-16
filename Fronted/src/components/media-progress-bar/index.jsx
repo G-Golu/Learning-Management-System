@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
@@ -47,5 +48,11 @@ function MediaProgressbar({ isMediaUploading, progress }) {
     </div>
   );
 }
+
+// Add PropTypes validation
+MediaProgressbar.propTypes = {
+  isMediaUploading: PropTypes.bool.isRequired, // `isMediaUploading` must be a boolean and is required
+  progress: PropTypes.number.isRequired, // `progress` must be a number and is required
+};
 
 export default MediaProgressbar;
