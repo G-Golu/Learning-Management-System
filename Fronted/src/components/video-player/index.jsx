@@ -8,8 +8,6 @@ import {
   Minimize,
   Pause,
   Play,
-  RotateCcw,
-  RotateCw,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -25,7 +23,6 @@ function VideoPlayer({
   const [volume, setVolume] = useState(0.5);
   const [muted, setMuted] = useState(false);
   const [played, setPlayed] = useState(0);
-  const [seeking, setSeeking] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
 
@@ -35,14 +32,15 @@ function VideoPlayer({
 
   const handleFullScreen = useCallback(() => {
     if (!isFullScreen) {
-      if (playerContainerRef?.current.requestFullscreen) {
-        playerContainerRef?.current?.requestFullscreen();
+      if (playerContainerRef.current.requestFullscreen) {
+        playerContainerRef.current.requestFullscreen();
       }
     } else {
       if (document.exitFullscreen) {
         document.exitFullscreen();
       }
     }
+    setIsFullScreen(!isFullScreen);
   }, [isFullScreen]);
 
   function handleMouseMove() {
@@ -53,7 +51,7 @@ function VideoPlayer({
 
   useEffect(() => {
     const handleFullScreenChange = () => {
-      setIsFullScreen(document.fullscreenElement);
+      setIsFullScreen(!!document.fullscreenElement);
     };
 
     document.addEventListener("fullscreenchange", handleFullScreenChange);
@@ -73,7 +71,50 @@ function VideoPlayer({
   }, [played]);
 
   return (
-    // JSX code...
+    <div
+      ref={playerContainerRef}
+      style={{ width, height }}
+      className="video-player-container"
+      onMouseMove={handleMouseMove}
+    >
+      <ReactPlayer
+        ref={playerRef}
+        url={url}
+        playing={playing}
+        volume={volume}
+        muted={muted}
+        onProgress={({ played }) => setPlayed(played)}
+        width="100%"
+        height="100%"
+      />
+      {showControls && (
+        <div className="controls">
+          <Button onClick={() => setPlaying(!playing)}>
+            {playing ? <Pause /> : <Play />}
+          </Button>
+          <Button onClick={() => setMuted(!muted)}>
+            {muted ? <VolumeX /> : <Volume2 />}
+          </Button>
+          <Slider
+            value={volume}
+            onChange={(v) => setVolume(v)}
+            max={1}
+            step={0.1}
+          />
+          <Slider
+            value={played}
+            onChange={(value) => {
+              playerRef.current.seekTo(value);
+            }}
+            max={1}
+            step={0.01}
+          />
+          <Button onClick={handleFullScreen}>
+            {isFullScreen ? <Minimize /> : <Maximize />}
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }
 
